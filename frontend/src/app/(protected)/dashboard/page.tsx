@@ -1,4 +1,5 @@
 'use client';
+import { createShortUrl, listEvents, listUrls, type UrlRecord } from '@/lib/api';
 import { Navbar } from '@/components/shared';
 import { Button } from '@/components/ui';
 import {
@@ -73,9 +74,56 @@ export default function Dashboard() {
     { msg: '[12:00:00] System initialized', type: 'success' },
     { msg: '[12:00:05] All nodes healthy', type: 'success' },
   ]);
+  const [createUrlInput, setCreateUrlInput] = useState('');
+  const [creatingUrl, setCreatingUrl] = useState(false);
+  const [createUrlError, setCreateUrlError] = useState('');
+  const [backendLinks, setBackendLinks] = useState<UrlRecord[]>([]);
+  const [visitCounts, setVisitCounts] = useState<Record<number, number>>({});
 
   const addLog = (msg: string, type: 'info' | 'warn' | 'error' | 'success') => {
     setLogs((prev) => [...prev, { msg: `[${new Date().toLocaleTimeString()}] ${msg}`, type }].slice(-6));
+  };
+
+  const loadBackendLinks = async () => {
+    try {
+      const data = await listUrls();
+      const latestLinks = data.slice().reverse().slice(0, 10);
+      setBackendLinks(latestLinks);
+
+      const events = await listEvents();
+      const counts: Record<number, number> = {};
+      for (const event of events) {
+        if (event.event_type === 'url_visited' && typeof event.url_id === 'number') {
+          counts[event.url_id] = (counts[event.url_id] || 0) + 1;
+        }
+      }
+      setVisitCounts(counts);
+      setCreateUrlError('');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to load links';
+      setCreateUrlError(message);
+    }
+  };
+
+  const handleCreateUrl = async () => {
+    if (!createUrlInput.trim()) {
+      return;
+    }
+
+    setCreatingUrl(true);
+    setCreateUrlError('');
+    try {
+      const created = await createShortUrl({ originalUrl: createUrlInput.trim(), userId: 1 });
+      setCreateUrlInput('');
+      addLog(`Created ${created.short_code}`, 'success');
+      await loadBackendLinks();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to create link';
+      setCreateUrlError(message);
+      addLog(`Create link failed: ${message}`, 'error');
+    } finally {
+      setCreatingUrl(false);
+    }
   };
 
   const triggerSpike = () => {
@@ -130,8 +178,17 @@ export default function Dashboard() {
     }
   }, [status, activeTab]);
 
+  useEffect(() => {
+    if (activeTab === 'analytics') {
+      loadBackendLinks();
+    }
+  }, [activeTab]);
+
   const currentLatency = opsData[opsData.length - 1]?.latency?.toFixed(0) || '0';
   const currentErrors = opsData[opsData.length - 1]?.errors?.toFixed(2) || '0';
+  const totalClicks = Object.values(visitCounts).reduce((sum, value) => sum + value, 0);
+  const activeLinks = backendLinks.filter((link) => link.is_active).length;
+  const uniqueUsers = new Set(backendLinks.map((link) => link.user_id)).size;
 
   return (
     <main 
@@ -208,17 +265,27 @@ export default function Dashboard() {
                   type="url"
                   placeholder="Create new link..."
                   className="w-full bg-transparent py-2.5 outline-none text-sm placeholder:text-black/30"
+                  value={createUrlInput}
+                  onChange={(event) => setCreateUrlInput(event.target.value)}
                 />
               </div>
-              <Button variant="dark" className="text-xs px-5 py-2.5 font-semibold">Create</Button>
+              <Button
+                variant="dark"
+                className="text-xs px-5 py-2.5 font-semibold"
+                onClick={handleCreateUrl}
+                disabled={creatingUrl}
+              >
+                {creatingUrl ? 'Creating...' : 'Create'}
+              </Button>
             </div>
+            {createUrlError && <p className="text-xs font-semibold text-red-600">{createUrlError}</p>}
 
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { label: 'Total Clicks', value: '124,592', icon: MousePointerClick, trend: '+12.5%' },
-                { label: 'Unique Visitors', value: '84,201', icon: Globe, trend: '+5.2%' },
-                { label: 'Avg. CTR', value: '24.8%', icon: ArrowUpRight, trend: '+2.1%' },
+                { label: 'Total Redirect Clicks', value: String(totalClicks), icon: MousePointerClick, trend: 'events' },
+                { label: 'Active Links', value: String(activeLinks), icon: Globe, trend: 'urls' },
+                { label: 'Distinct Owners', value: String(uniqueUsers), icon: ArrowUpRight, trend: 'users' },
               ].map((stat) => (
                 <div
                   key={stat.label}
@@ -272,51 +339,35 @@ export default function Dashboard() {
                     <tr className="border-b border-black/5 bg-black/[0.02]">
                       <th className="px-6 py-3 text-xs font-semibold text-black/50 uppercase tracking-[0.1em]">Short Link</th>
                       <th className="px-6 py-3 text-xs font-semibold text-black/50 uppercase tracking-[0.1em]">Original URL</th>
-                      <th className="px-6 py-3 text-xs font-semibold text-black/50 uppercase tracking-[0.1em]">Clicks</th>
+                      <th className="px-6 py-3 text-xs font-semibold text-black/50 uppercase tracking-[0.1em]">Visits</th>
                       <th className="px-6 py-3 text-xs font-semibold text-black/50 uppercase tracking-[0.1em]">Status</th>
                       <th className="px-6 py-3" />
                     </tr>
                   </thead>
                   <tbody>
-                    {[
-                      {
-                        short: 'sequel.link/launch',
-                        orig: 'https://example.com/campaign-2026',
-                        clicks: '45.2k',
-                        status: 'Active',
-                      },
-                      {
-                        short: 'sequel.link/docs',
-                        orig: 'https://docs.example.com/v2',
-                        clicks: '12.8k',
-                        status: 'Active',
-                      },
-                      {
-                        short: 'sequel.link/promo',
-                        orig: 'https://example.com/special-offer',
-                        clicks: '8.4k',
-                        status: 'Expired',
-                      },
-                    ].map((link) => (
+                    {backendLinks.map((link) => (
                       <tr
-                        key={link.short}
+                        key={link.id}
                         className="border-b border-black/[0.03] hover:bg-black/[0.015] transition-colors"
                       >
                         <td className="px-6 py-4 text-sm font-semibold flex items-center gap-3">
-                          {link.short}
-                          <Copy className="w-3.5 h-3.5 cursor-pointer text-black/20 hover:text-black/70 transition-colors" />
+                          {`/${link.short_code}`}
+                          <Copy
+                            className="w-3.5 h-3.5 cursor-pointer text-black/20 hover:text-black/70 transition-colors"
+                            onClick={() => navigator.clipboard.writeText(`${window.location.origin}/${link.short_code}`)}
+                          />
                         </td>
-                        <td className="px-6 py-4 text-sm text-black/45 truncate max-w-xs">{link.orig}</td>
-                        <td className="px-6 py-4 text-sm font-semibold">{link.clicks}</td>
+                        <td className="px-6 py-4 text-sm text-black/45 truncate max-w-xs">{link.original_url}</td>
+                        <td className="px-6 py-4 text-sm font-semibold">{visitCounts[link.id] || 0}</td>
                         <td className="px-6 py-4">
                           <span
                             className={`px-2.5 py-1 text-xs font-semibold rounded-sm ${
-                              link.status === 'Active' 
+                              link.is_active
                                 ? 'bg-green-50 text-green-600' 
                                 : 'bg-black/[0.04] text-black/35'
                             }`}
                           >
-                            {link.status}
+                            {link.is_active ? 'Active' : 'Disabled'}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">
@@ -329,6 +380,13 @@ export default function Dashboard() {
                         </td>
                       </tr>
                     ))}
+                    {!backendLinks.length && (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-8 text-center text-sm text-black/40">
+                          No links found yet. Create one above.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

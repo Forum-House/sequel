@@ -1,13 +1,13 @@
 export function SocialProofMarquee() {
   const keywords = [
-    'INSTANT REDIRECTS',
-    'ENCRYPTED LINKS',
-    'SMART ROUTING',
-    'LIVE ANALYTICS',
-    'BATTLE TESTED',
-    'BRANDED DOMAINS',
-    'ENTERPRISE READY',
-    'AUTO SCALING',
+    'FASTAPI + REDIS + POSTGRES',
+    'CACHE FIRST REDIRECTS',
+    'STRUCTURED REQUEST LOGS',
+    'EVENT TRACKING',
+    'HEALTH + METRICS',
+    'DOCKER COMPOSE READY',
+    'CHAOS TESTED FLOWS',
+    'OPEN SOURCE BUILD',
   ];
 
   return (

@@ -2,18 +2,18 @@ export function HowItWorks() {
   const steps = [
     {
       step: '01',
-      title: 'Input',
-      desc: 'Paste any URL into the generator.',
+      title: 'Create',
+      desc: 'Submit a URL and create a short code through the API.',
     },
     {
       step: '02',
-      title: 'Customize',
-      desc: 'Add routing rules, expiry, or protection.',
+      title: 'Resolve',
+      desc: 'Redirect traffic via cache-first lookup with DB fallback.',
     },
     {
       step: '03',
-      title: 'Launch',
-      desc: 'Deploy and track performance instantly.',
+      title: 'Observe',
+      desc: 'Track health, metrics, and events from one dashboard.',
     },
   ];
 
@@ -39,7 +39,7 @@ export function HowItWorks() {
             </span>
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold tracking-tight leading-tight">
-            Simple setup,<br />powerful results
+            Simple flow,<br />production mindset
           </h2>
         </div>
 

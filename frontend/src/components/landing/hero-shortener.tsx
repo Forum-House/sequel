@@ -1,5 +1,6 @@
 'use client';
 
+import { createShortUrl } from '@/lib/api';
 import { Button } from '@/components/ui';
 import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
@@ -8,18 +9,32 @@ export function HeroShortener() {
   const [url, setUrl] = useState('');
   const [shortUrl, setShortUrl] = useState('');
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleGenerate = () => {
-    if (url.trim()) {
-      // Generate a fake short URL for demo
-      const hash = Math.random().toString(36).substring(2, 8);
-      setShortUrl(`sequel.link/${hash}`);
+  const handleGenerate = async () => {
+    if (!url.trim()) {
+      return;
+    }
+
+    setError('');
+    setLoading(true);
+    try {
+      const created = await createShortUrl({ originalUrl: url.trim(), userId: 1 });
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      setShortUrl(origin ? `${origin}/${created.short_code}` : created.short_code);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Could not shorten URL';
+      setError(message);
+      setShortUrl('');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleCopy = async () => {
     if (shortUrl) {
-      await navigator.clipboard.writeText(`https://${shortUrl}`);
+      await navigator.clipboard.writeText(shortUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -44,22 +59,22 @@ export function HeroShortener() {
         <div className="flex justify-center mb-12">
           <div className="inline-flex items-center gap-2.5 bg-black text-white px-5 py-2 text-xs font-semibold tracking-[0.2em] uppercase">
             <span className="flex h-2 w-2 rounded-full bg-white animate-pulse" />
-            Intelligent Link Platform
+            Sequel URL Platform
           </div>
         </div>
 
         {/* Main Heading - Centered */}
         <div className="text-center mb-12">
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-heading font-black tracking-[-0.02em] leading-[0.9] mb-8">
-            Smarter links,
+            Reliable links,
             <br />
             <span className="relative inline-block mt-2">
-              faster growth
+              clear operations
               <span className="absolute bottom-1 left-0 w-full h-2 bg-black/80" />
             </span>
           </h1>
           <p className="text-base md:text-lg font-medium max-w-lg mx-auto text-black/50 leading-relaxed">
-            Beyond shortening — an adaptive link infrastructure built for scale and reliability.
+            Create short URLs, track events, and monitor health in one production-focused stack.
           </p>
         </div>
 
@@ -71,7 +86,7 @@ export function HeroShortener() {
                 type="url"
                 value={shortUrl || url}
                 onChange={(e) => { setUrl(e.target.value); setShortUrl(''); }}
-                placeholder="Enter your URL..."
+                placeholder="Paste a long URL to shorten"
                 className="w-full bg-transparent py-3.5 outline-none text-base placeholder:text-black/30"
                 readOnly={!!shortUrl}
               />
@@ -101,19 +116,21 @@ export function HeroShortener() {
                 size="lg" 
                 className="shrink-0 px-8 py-3.5 text-sm font-semibold shadow-none"
                 onClick={handleGenerate}
+                disabled={loading}
               >
-                Generate
+                {loading ? 'Generating...' : 'Generate'}
               </Button>
             )}
           </div>
+          {error && <p className="mt-3 text-xs text-red-600 font-semibold">{error}</p>}
         </div>
 
         {/* Stats Row */}
         <div className="flex flex-wrap justify-center gap-12 md:gap-20">
           {[
-            { value: '12M+', label: 'Links generated' },
-            { value: '99.99%', label: 'Availability' },
-            { value: '32ms', label: 'Avg. response' },
+            { value: 'FastAPI', label: 'API runtime' },
+            { value: 'Redis', label: 'Redirect cache' },
+            { value: 'PostgreSQL', label: 'Source of truth' },
           ].map((stat) => (
             <div key={stat.label} className="text-center group cursor-default">
               <div className="text-3xl md:text-4xl font-black tracking-tight mb-1 group-hover:text-black/70 transition-colors">{stat.value}</div>

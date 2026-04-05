@@ -2,13 +2,13 @@ import { Check, X } from 'lucide-react';
 
 export function ComparisonSection() {
   const comparisons = [
-    { feature: 'Branded, memorable URLs', them: false, us: true },
-    { feature: 'Granular click analytics', them: false, us: true },
-    { feature: 'Conditional redirects', them: false, us: true },
-    { feature: 'Access protection', them: false, us: true },
-    { feature: 'Operations dashboard', them: false, us: true },
-    { feature: 'Custom domains', them: true, us: true },
-    { feature: 'High-availability SLA', them: false, us: true },
+    { feature: 'Dockerized local stack', them: false, us: true },
+    { feature: 'Redis fallback to PostgreSQL', them: false, us: true },
+    { feature: 'Structured request logs with IDs', them: false, us: true },
+    { feature: 'Events stream for URL activity', them: false, us: true },
+    { feature: 'Health + metrics endpoints', them: false, us: true },
+    { feature: 'Basic URL create + redirect', them: true, us: true },
+    { feature: 'Chaos-ready operations dashboard', them: false, us: true },
   ];
 
   return (
@@ -36,7 +36,7 @@ export function ComparisonSection() {
             The difference is clear
           </h2>
           <p className="text-sm text-white/40 max-w-md mx-auto">
-            Feature-by-feature comparison with typical shorteners
+            Feature-by-feature comparison with a basic demo shortener
           </p>
         </div>
 

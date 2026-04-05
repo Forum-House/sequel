@@ -1,24 +1,24 @@
 export function InnovationsGrid() {
   const innovations = [
     {
-      title: 'Intelligent Slugs',
-      text: 'Auto-generate memorable, context-aware URLs that resonate.',
+      title: 'Short Code Generation',
+      text: 'Create unique short codes with collision-safe retries.',
     },
     {
-      title: 'Dynamic Routing',
-      text: 'Direct traffic by device, geography, or custom conditions.',
+      title: 'Active/Inactive URL Control',
+      text: 'Disable links safely and keep redirect behavior predictable.',
     },
     {
-      title: 'Live Insights',
-      text: 'Monitor clicks, sources, and conversions as they happen.',
+      title: 'Event Tracking',
+      text: 'Record url_created, url_visited, and url_deactivated events.',
     },
     {
-      title: 'Built-in Security',
-      text: 'Password gates, link expiration, and domain isolation.',
+      title: 'Resilient Redirects',
+      text: 'Continue serving redirects even when cache is unavailable.',
     },
     {
-      title: 'Revenue Attribution',
-      text: 'Connect every click to revenue with conversion tracking.',
+      title: 'Ops Instrumentation',
+      text: 'Expose health and metrics endpoints for runtime visibility.',
     },
   ];
 
@@ -40,10 +40,10 @@ export function InnovationsGrid() {
           </div>
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold tracking-tight leading-tight">
-              Tools to grow<br className="hidden sm:block" /> your reach
+              Tools to run<br className="hidden sm:block" /> links reliably
             </h2>
             <p className="text-sm text-black/45 max-w-sm lg:text-right leading-relaxed">
-              Engineered for teams that prioritize performance and reliability.
+              Built around the exact stack in this project: FastAPI, Postgres, Redis, and Nginx.
             </p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export function InnovationsGrid() {
           
           {/* Coming Soon Card */}
           <div className="p-7 border-2 border-dashed border-black/10 flex items-center justify-center rounded-sm hover:border-black/20 transition-colors cursor-pointer group">
-            <span className="text-sm text-black/25 font-medium group-hover:text-black/40 transition-colors">Coming soon</span>
+            <span className="text-sm text-black/25 font-medium group-hover:text-black/40 transition-colors">More integrations coming next</span>
           </div>
         </div>
       </div>

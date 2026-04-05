@@ -1,5 +1,6 @@
 import os, csv, random, string
 from datetime import datetime
+from typing import cast
 from flask import Flask, request, jsonify, redirect
 from sqlalchemy import create_engine, Column, Integer, String, Text, Boolean, DateTime, ForeignKey, JSON, func
 from sqlalchemy.orm import DeclarativeBase, relationship, sessionmaker
@@ -53,7 +54,7 @@ def seed_db():
                     for row in csv.DictReader(f):
                         if not db.query(User).filter_by(username=row["username"]).first():
                             u=User(username=row["username"],email=row["email"])
-                            if row.get("id"): u.id=int(row["id"])
+                            if row.get("id"): setattr(u,"id",int(row["id"]))
                             db.add(u)
                 db.commit(); break
             except FileNotFoundError: continue
@@ -83,7 +84,7 @@ def create_app():
                     count=0
                     for row in rows:
                         existing=db.query(User).filter_by(username=row["username"]).first()
-                        if existing: existing.email=row["email"]
+                        if existing: setattr(existing,"email",str(row["email"]))
                         else: db.add(User(username=row["username"],email=row["email"])); count+=1
                     db.commit(); return jsonify({"imported":len(rows),"loaded":len(rows)}),201
                 except FileNotFoundError: continue
@@ -120,7 +121,9 @@ def create_app():
         with SessionLocal() as db:
             q=db.query(URL)
             if "user_id" in request.args: q=q.filter(URL.user_id==request.args.get("user_id",type=int))
-            if "is_active" in request.args: q=q.filter(URL.is_active==(request.args.get("is_active").lower()=="true"))
+            if "is_active" in request.args:
+                is_active_arg=(request.args.get("is_active") or "").lower()=="true"
+                q=q.filter(URL.is_active==is_active_arg)
             total=q.count(); items=[urld(u) for u in q.all()]
             return jsonify({"kind":"list","sample":items,"total_items":total}),200
     @app.route("/urls/<int:uid>",methods=["GET"])
@@ -141,7 +144,7 @@ def create_app():
         with SessionLocal() as db:
             u=db.get(URL,uid)
             if not u: return jsonify({"detail":"Not found"}),404
-            [setattr(u,k,v) for k,v in data.items()]; u.updated_at=datetime.utcnow(); db.commit(); db.refresh(u); return jsonify(urld(u)),200
+            [setattr(u,k,v) for k,v in data.items()]; setattr(u,"updated_at",datetime.utcnow()); db.commit(); db.refresh(u); return jsonify(urld(u)),200
     @app.route("/urls/<int:uid>",methods=["DELETE"])
     def delete_url(uid):
         with SessionLocal() as db:
@@ -152,7 +155,7 @@ def create_app():
     def redirect_short(short_code):
         with SessionLocal() as db:
             u=db.query(URL).filter_by(short_code=short_code,is_active=True).first()
-            return redirect(u.original_url,302) if u else (jsonify({"detail":"Not found"}),404)
+            return redirect(cast(str,u.original_url),302) if u else (jsonify({"detail":"Not found"}),404)
     @app.route("/events",methods=["GET"])
     def get_events():
         with SessionLocal() as db:

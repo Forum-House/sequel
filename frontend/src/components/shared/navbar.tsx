@@ -16,10 +16,10 @@ export function Navbar() {
   const isHomePage = pathname === '/';
 
   const navLinks = [
-    { label: 'Product', href: '#product' },
+    { label: 'Shorten', href: '#product' },
     { label: 'About', href: '#about' },
-    { label: 'Features', href: '#features' },
-    { label: 'Operations', href: '#sre' },
+    { label: 'Capabilities', href: '#features' },
+    { label: 'Ops', href: '#sre' },
   ];
 
   // Track scroll for navbar styling and visibility
@@ -128,7 +128,7 @@ export function Navbar() {
         {/* Right Actions */}
         <div className="flex items-center gap-4">
           <a
-            href="https://github.com/Forum-House/sequel.git"
+            href="https://github.com/Forum-House/sequel"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:flex items-center gap-2 text-sm font-medium text-black/50 hover:text-black transition-colors"
@@ -194,7 +194,7 @@ export function Navbar() {
             )}
             <div className="pt-6 border-t border-black/10 space-y-4">
               <a
-                href="https://github.com/Forum-House/sequel.git"
+                href="https://github.com/Forum-House/sequel"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm font-medium text-black/50"

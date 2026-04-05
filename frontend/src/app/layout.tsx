@@ -23,8 +23,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Sequel - Production-Ready Link System',
-  description: 'More than a shortener — a production-ready link system.',
+  title: 'Sequel - Resilient URL Shortener',
+  description: 'FastAPI + Redis + PostgreSQL URL shortener with operations visibility.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

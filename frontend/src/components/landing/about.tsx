@@ -4,23 +4,23 @@ export function AboutSection() {
   const values = [
     {
       icon: Zap,
-      title: 'Speed First',
-      desc: 'Sub-40ms redirects globally. No compromises.',
+      title: 'Fast Redirect Path',
+      desc: 'Cache-first short-code resolution with graceful DB fallback.',
     },
     {
       icon: Shield,
-      title: 'Privacy Focused',
-      desc: 'Your data stays yours. No third-party tracking.',
+      title: 'Failure Tolerant',
+      desc: 'Redis outages degrade safely instead of breaking redirects.',
     },
     {
       icon: Globe,
-      title: 'Globally Distributed',
-      desc: 'Edge nodes across 40+ regions worldwide.',
+      title: 'Operationally Visible',
+      desc: 'Health checks, request IDs, logs, and metrics built in.',
     },
     {
       icon: Code2,
-      title: 'Open Source',
-      desc: 'Transparent, auditable, community-driven.',
+      title: 'API-First',
+      desc: 'FastAPI endpoints for users, URLs, redirects, and events.',
     },
   ];
 
@@ -50,17 +50,17 @@ export function AboutSection() {
             </div>
             
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold tracking-tight mb-6 leading-tight">
-              Built for the<br />modern web
+              Built for reliable<br />URL operations
             </h2>
             
             <p className="text-base text-black/55 mb-6 leading-relaxed max-w-md">
-              Sequel started as a simple idea: link management shouldn't be complicated. 
-              We built a platform that developers love and businesses trust.
+              Sequel is a production-focused URL shortener built for this hackathon template.
+              It combines FastAPI, PostgreSQL, Redis, and Nginx behind a clean frontend.
             </p>
             
             <p className="text-base text-black/55 leading-relaxed max-w-md">
-              From startups to enterprises, teams use Sequel to create, manage, and 
-              analyze their links with confidence. No vendor lock-in, no hidden costs.
+              The goal is practical reliability: seed-safe startup, observable traffic,
+              and repeatable local runs with Docker Compose and automated tests.
             </p>
           </div>
 
@@ -93,10 +93,10 @@ export function AboutSection() {
           }}
         >
           {[
-            { value: '2019', label: 'Founded' },
-            { value: '50K+', label: 'Active Users' },
-            { value: '1B+', label: 'Links Served' },
-            { value: '40+', label: 'Edge Regions' },
+            { value: '31/31', label: 'Core tests passing' },
+            { value: '2', label: 'API replicas in compose' },
+            { value: 'Redis + PG', label: 'Data path' },
+            { value: '/metrics', label: 'Runtime telemetry' },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="text-2xl md:text-3xl font-black text-white mb-1">{stat.value}</div>

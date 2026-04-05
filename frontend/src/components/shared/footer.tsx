@@ -24,7 +24,7 @@ export function Footer() {
               <span className="font-heading font-bold text-2xl tracking-tight text-white">Sequel</span>
             </Link>
             <p className="text-sm text-white/50 max-w-sm leading-relaxed">
-              Modern link infrastructure for teams that move fast. Scale with confidence.
+              Production-minded URL shortener with observability, resilience, and clean local workflows.
             </p>
           </div>
 
@@ -55,14 +55,16 @@ export function Footer() {
             <h4 className="text-xs font-semibold tracking-[0.2em] text-white/50 uppercase mb-5">Resources</h4>
             <ul className="space-y-3 text-sm">
               {[
-                { label: 'Documentation', href: 'docs' },
-                { label: 'API Reference', href: 'docs' },
-                { label: 'Status', href: 'docs' },
-                { label: 'Support', href: 'docs' },
+                { label: 'Documentation', href: 'https://github.com/Forum-House/sequel/tree/main/docs' },
+                { label: 'API Reference', href: 'https://github.com/Forum-House/sequel/blob/main/docs/api.md' },
+                { label: 'Runbooks', href: 'https://github.com/Forum-House/sequel/blob/main/docs/runbooks.md' },
+                { label: 'Troubleshooting', href: 'https://github.com/Forum-House/sequel/blob/main/docs/troubleshooting.md' },
               ].map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-white/60 hover:text-white transition-colors"
                   >
                     {link.label}
@@ -76,7 +78,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-center items-center pt-8 border-t border-white/10 gap-4">
           <div className="text-sm text-white/40">
-            © {new Date().getFullYear()} Sequel Inc. All rights reserved.
+            © {new Date().getFullYear()} Sequel. Built for the PE Hackathon Template.
           </div>
           
         </div>

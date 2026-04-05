@@ -50,27 +50,27 @@ export function SREDashboardPitch() {
                 <div className="grid grid-cols-2 gap-4 py-4 border-y border-white/5">
                   <div>
                     <div className="text-white/20 text-[10px] mb-1 uppercase tracking-wider">P99 Latency</div>
-                    <div className="text-2xl font-bold text-white/90">38ms</div>
+                    <div className="text-2xl font-bold text-white/90">live</div>
                   </div>
                   <div>
                     <div className="text-white/20 text-[10px] mb-1 uppercase tracking-wider">Error Rate</div>
-                    <div className="text-2xl font-bold text-white/90">0.002%</div>
+                    <div className="text-2xl font-bold text-white/90">tracked</div>
                   </div>
                 </div>
 
                 <div className="space-y-1.5 text-xs">
-                  <div className="text-red-400/70">[14:22:01] ERROR: Connection timeout</div>
-                  <div className="text-green-400/70">[14:22:15] OK: Retry successful</div>
-                  <div className="text-green-400/70">[14:22:18] OK: Scaling initiated</div>
-                  <div className="text-green-400/80">[14:22:32] OK: Capacity 6 → 12</div>
+                  <div className="text-red-400/70">[14:22:01] WARN: Redis timeout, fallback enabled</div>
+                  <div className="text-green-400/70">[14:22:04] OK: Redirect served from PostgreSQL</div>
+                  <div className="text-green-400/70">[14:22:09] OK: Cache warmed with fresh key</div>
+                  <div className="text-green-400/80">[14:22:12] OK: Request completed with x-cache header</div>
                 </div>
 
                 <div className="flex gap-2 pt-2">
                   <button className="flex-1 border border-white/10 py-2 text-xs font-medium text-white/40 hover:bg-white/5 hover:text-white/70 transition-colors rounded-sm">
-                    LOAD TEST
+                    DRILL TRAFFIC
                   </button>
                   <button className="flex-1 border border-white/10 py-2 text-xs font-medium text-white/40 hover:bg-white/5 hover:text-white/70 transition-colors rounded-sm">
-                    FAILOVER
+                    SIMULATE OUTAGE
                   </button>
                 </div>
               </div>
@@ -85,15 +85,15 @@ export function SREDashboardPitch() {
               </span>
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white tracking-tight mb-5 leading-tight">
-              Production-grade<br />reliability
+              Observe resilience<br />as it happens
             </h2>
             <p className="text-base text-white/50 mb-8 max-w-md lg:ml-auto leading-relaxed">
-              Stress-test your infrastructure, simulate outages, and observe behavior in real time.
+              Validate health checks, event logs, and fallback behavior from a single dashboard.
             </p>
             
             {/* Feature List */}
             <div className="grid grid-cols-2 gap-3 mb-8 lg:justify-items-end">
-              {['Live metrics', 'Fault injection', 'Elastic scaling', 'Event logging'].map((item) => (
+              {['Live metrics endpoint', 'Failure simulation', 'Cache fallback visibility', 'Event history stream'].map((item) => (
                 <div key={item} className="flex items-center gap-2.5 lg:flex-row-reverse">
                   <span className="text-sm text-white/60">{item}</span>
                   <div className="w-1.5 h-1.5 bg-white/40 rounded-full" />
