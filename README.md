@@ -115,6 +115,7 @@ PE-Hackathon-Template-2026/
 	app/
 	backend/data/
 	docs/
+	frontend/
 	docker-compose.yml
 	init.sql
 	final_test.sh
