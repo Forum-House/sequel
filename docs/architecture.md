@@ -31,13 +31,13 @@ sequenceDiagram
 
 ```mermaid
 graph TD
-    users[users\nid, username, email, created_at]
-    urls[urls\nid, user_id, short_code, original_url, title, is_active, created_at, updated_at]
-    events[events\nid, url_id, user_id, event_type, timestamp, details]
+    users["users\nid, username, email, created_at"]
+    urls["urls\nid, user_id, short_code, original_url, title, is_active, created_at, updated_at"]
+    events["events\nid, url_id, user_id, event_type, timestamp, details"]
 
     users -->|1:N| urls
-    users -->|1:N (nullable FK)| events
-    urls -->|1:N (nullable FK)| events
+    users -->|1:N nullable FK| events
+    urls -->|1:N nullable FK| events
 ```
 
 ## ASCII Fallback Diagram
