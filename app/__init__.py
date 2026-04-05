@@ -52,7 +52,9 @@ def seed_db():
                 with open(fname,newline="") as f:
                     for row in csv.DictReader(f):
                         if not db.query(User).filter_by(username=row["username"]).first():
-                            db.add(User(username=row["username"],email=row["email"]))
+                            u=User(username=row["username"],email=row["email"])
+                            if row.get("id"): u.id=int(row["id"])
+                            db.add(u)
                 db.commit(); break
             except FileNotFoundError: continue
 def create_app():
@@ -83,7 +85,7 @@ def create_app():
                         existing=db.query(User).filter_by(username=row["username"]).first()
                         if existing: existing.email=row["email"]
                         else: db.add(User(username=row["username"],email=row["email"])); count+=1
-                    db.commit(); return jsonify({"loaded":len(rows)}),200
+                    db.commit(); return jsonify({"imported":len(rows),"loaded":len(rows)}),201
                 except FileNotFoundError: continue
             return jsonify({"error":"file not found"}),400
     @app.route("/users/<int:uid>",methods=["GET"])
