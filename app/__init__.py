@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL") or f"postgresql+psycopg2://{os.getenv('DATABASE_USER','postgres')}:{os.getenv('DATABASE_PASSWORD','postgres')}@{os.getenv('DATABASE_HOST','postgres')}:{os.getenv('DATABASE_PORT','5432')}/{os.getenv('DATABASE_NAME','url_shortener')}"
 DATABASE_URL = DATABASE_URL.replace("postgresql+asyncpg://","postgresql+psycopg2://")
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-SessionLocal = sessionmaker(bind=engine)
+engine = None
+SessionLocal = None
 class Base(DeclarativeBase): pass
 class User(Base):
     __tablename__="users"
@@ -59,6 +59,10 @@ def seed_db():
                 db.commit(); break
             except FileNotFoundError: continue
 def create_app():
+    global engine, SessionLocal
+    if engine is None:
+        engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+        SessionLocal = sessionmaker(bind=engine)
     app=Flask(__name__)
     Base.metadata.create_all(engine)
     seed_db()
