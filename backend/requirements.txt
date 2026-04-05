@@ -1,7 +1,9 @@
 asyncpg>=0.30
 a2wsgi>=1.0
 fastapi>=0.115
+flask>=3.0.0
 httpx>=0.28
+psycopg2-binary>=2.9
 python-dotenv>=1.0
 python-multipart>=0.0.20
 redis>=5.2

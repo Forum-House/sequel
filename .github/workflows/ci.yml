@@ -13,10 +13,11 @@ jobs:
       postgres:
         image: postgres:15
         env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: url_shortener_test
+          POSTGRES_DB: sequel_test
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U postgres -d sequel_test"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -36,11 +37,16 @@ jobs:
         with:
           python-version: "3.13"
       - name: Install dependencies
-        run: pip install -r backend/requirements.txt
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
       - name: Run tests with coverage
-        run: PYTHONPATH=. pytest backend/tests/ -v --cov=app --cov-report=term --cov-fail-under=50
+        working-directory: backend
         env:
           PYTHONPATH: .
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost/url_shortener_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sequel_test
           REDIS_URL: redis://localhost:6379
           BASE_URL: http://localhost
+        run: |
+          pytest tests/ -v --cov=app --cov-report=term-missing --cov-fail-under=50
