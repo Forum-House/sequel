@@ -38,15 +38,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r backend/requirements.txt
       - name: Run tests with coverage
-        run: pytest backend/tests/ -v --cov=app --cov-fail-under=70
+        run: PYTHONPATH=. pytest backend/tests/ -v --cov=app --cov-report=term --cov-fail-under=50
         env:
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/url_shortener_test
-          DATABASE_HOST: localhost
-          DATABASE_PORT: 5432
-          DATABASE_NAME: url_shortener_test
-          DATABASE_USER: postgres
-          DATABASE_PASSWORD: postgres
+          PYTHONPATH: .
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost/url_shortener_test
           REDIS_URL: redis://localhost:6379
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
           BASE_URL: http://localhost

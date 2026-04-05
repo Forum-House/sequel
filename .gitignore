@@ -1,36 +1,10 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.egg-info/
-*.egg
-dist/
-build/
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
-# Virtual environment
-.venv/
+import uuid
+from collections.abc import AsyncGenerator
+from pathlib import Path
 
-# Environment variables
-.env
-
-# uv
-uv.lock
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# pytest
-.pytest_cache/
-.coverage
-htmlcov/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Judging (not visible to participants)
-judging/
+import pytest
+from httpx import ASGITransport, AsyncClient
