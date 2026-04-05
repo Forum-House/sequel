@@ -47,7 +47,7 @@ def list_resp(items): return {"kind":"list","sample":items,"total_items":len(ite
 def seed_db():
     with SessionLocal() as db:
         if db.query(User).count() > 0: return
-        for fname in ["users.csv","/app/users.csv"]:
+        for fname in ["backend/data/users.csv","data/users.csv","/app/backend/data/users.csv","users.csv"]:
             try:
                 with open(fname,newline="") as f:
                     for row in csv.DictReader(f):
@@ -75,7 +75,7 @@ def create_app():
         data=request.get_json(force=True,silent=True) or {}
         filename=data.get("file","users.csv")
         with SessionLocal() as db:
-            for path in [filename, f"/app/{filename}"]:
+            for path in [f"backend/data/{filename}", f"data/{filename}", f"/app/backend/data/{filename}", f"/app/data/{filename}", filename]:
                 try:
                     with open(path,newline="") as f:
                         count=0
