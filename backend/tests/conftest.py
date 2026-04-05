@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 os.environ.setdefault(
     "DATABASE_URL",
-    "postgresql+asyncpg://postgres:postgres@localhost:5432/url_shortener_test",
+    "postgresql://postgres:postgres@localhost:5432/sequel_test",
 )
 os.environ.setdefault("REDIS_HOST", "localhost")
 os.environ.setdefault("REDIS_PORT", "6379")
@@ -22,10 +22,9 @@ from app.main import app
 
 
 def _database_url() -> str:
-    explicit = os.getenv("DATABASE_URL")
-    if explicit:
-        return explicit
-    return "postgresql+asyncpg://postgres:postgres@localhost:5432/url_shortener"
+    url = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/sequel_test")
+    # asyncpg requires postgresql+asyncpg:// scheme
+    return url.replace("postgresql://", "postgresql+asyncpg://")
 
 
 @pytest.fixture(scope="session")
