@@ -14,6 +14,7 @@ COPY app ./app
 
 RUN pip install --no-cache-dir \
     fastapi \
+    a2wsgi \
     uvicorn[standard] \
     asyncpg \
     sqlalchemy \

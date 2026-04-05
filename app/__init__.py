@@ -1,4 +1,5 @@
 def create_app():
     from app.main import app as fastapi_app
+    from a2wsgi import ASGIMiddleware
 
-    return fastapi_app
+    return ASGIMiddleware(fastapi_app)
