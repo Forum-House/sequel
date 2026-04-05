@@ -1,0 +1,158 @@
+x-api-env: &api-env
+  API_HOST: ${API_HOST:-0.0.0.0}
+  API_PORT: ${API_PORT:-8000}
+  DATABASE_HOST: postgres
+  DATABASE_PORT: 5432
+  DATABASE_POOL_MAX: ${DATABASE_POOL_MAX:-10}
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  REDIS_CACHE_TTL_SECONDS: ${REDIS_CACHE_TTL_SECONDS:-3600}
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-url_shortener}
+      POSTGRES_USER: ${DATABASE_USER:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-postgres} -d ${DATABASE_NAME:-url_shortener}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app_net
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: ["redis-server", "--appendonly", "no", "--save", ""]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    networks:
+      - app_net
+
+  api1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment: *api-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend/data/users.csv:/app/seed/users.csv:ro
+      - ./backend/data/urls.csv:/app/seed/urls.csv:ro
+      - ./backend/data/events.csv:/app/seed/events.csv:ro
+    expose:
+      - "8000"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - app_net
+
+  api2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment: *api-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend/data/users.csv:/app/seed/users.csv:ro
+      - ./backend/data/urls.csv:/app/seed/urls.csv:ro
+      - ./backend/data/events.csv:/app/seed/events.csv:ro
+    expose:
+      - "8000"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - app_net
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: always
+    depends_on:
+      api1:
+        condition: service_started
+      api2:
+        condition: service_started
+    ports:
+      - "80:80"
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - app_net
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      api1:
+        condition: service_started
+      api2:
+        condition: service_started
+    networks:
+      - app_net
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      prometheus:
+        condition: service_started
+    networks:
+      - app_net
+
+volumes:
+  postgres_data:
+  grafana_data:
+
+networks:
+  app_net:
+    driver: bridge

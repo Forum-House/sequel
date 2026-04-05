@@ -1,0 +1,11 @@
+alerts:
+  - name: ServiceDown
+    condition: GET /health returns non-200 for 2 consecutive checks
+    interval: 5 minutes
+    channels: [discord]
+    message: "ALERT: URL Shortener is DOWN - /health returned {status_code}"
+
+  - name: HighErrorRate
+    condition: error rate > 5% over 10 minute window
+    channels: [discord]
+    message: "WARNING: High error rate detected - {error_rate}% errors"

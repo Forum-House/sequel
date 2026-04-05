@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'url-shortener'
+    static_configs:
+      - targets: ['api1:8000', 'api2:8000']
+    metrics_path: '/metrics/prometheus'
