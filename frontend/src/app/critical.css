@@ -1,0 +1,40 @@
+/* Critical CSS - Inline above-the-fold styles */
+.font-heading {
+  font-family: Arial, sans-serif;
+  font-weight: 800;
+}
+
+.font-body {
+  font-family: Arial, sans-serif;
+}
+
+.bg-sequel-primary {
+  background-color: #ffffff;
+}
+
+.bg-sequel-light {
+  background-color: #ffffff;
+}
+
+.bg-sequel-black {
+  background-color: #000000;
+}
+
+.text-sequel-black {
+  color: #000000;
+}
+
+.border-sequel-black {
+  border-color: #000000;
+}
+
+/* Prevent layout shift */
+h1 {
+  min-height: 200px;
+}
+
+@media (min-width: 768px) {
+  h1 {
+    min-height: 280px;
+  }
+}
