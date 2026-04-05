@@ -97,6 +97,8 @@ def create_app():
     def create_user():
         data=request.get_json(force=True)
         with SessionLocal() as db:
+            existing=db.query(User).filter_by(username=data["username"]).first()
+            if existing: return jsonify(ud(existing)),200
             u=User(username=data["username"],email=data["email"]); db.add(u)
             try: db.commit(); db.refresh(u); return jsonify(ud(u)),201
             except IntegrityError: db.rollback(); return jsonify({"detail":"Already exists"}),409
