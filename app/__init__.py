@@ -77,12 +77,13 @@ def create_app():
         with SessionLocal() as db:
             for path in [f"backend/data/{filename}", f"data/{filename}", f"/app/backend/data/{filename}", f"/app/data/{filename}", filename]:
                 try:
-                    with open(path,newline="") as f:
-                        count=0
-                        for row in csv.DictReader(f):
-                            if db.query(User).filter_by(username=row["username"]).first(): continue
-                            db.add(User(username=row["username"],email=row["email"])); count+=1
-                        db.commit(); return jsonify({"loaded":count}),200
+                    with open(path,newline="") as f: rows=list(csv.DictReader(f))
+                    count=0
+                    for row in rows:
+                        existing=db.query(User).filter_by(username=row["username"]).first()
+                        if existing: existing.email=row["email"]
+                        else: db.add(User(username=row["username"],email=row["email"])); count+=1
+                    db.commit(); return jsonify({"loaded":len(rows)}),200
                 except FileNotFoundError: continue
             return jsonify({"error":"file not found"}),400
     @app.route("/users/<int:uid>",methods=["GET"])
